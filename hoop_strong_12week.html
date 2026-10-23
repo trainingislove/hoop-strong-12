@@ -1,114 +1,463 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="ja">
+
 <head>
-<meta charset="utf-8">
+
+<meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#101827">
+
 <title>HOOP STRONG | 12週間トレーニング</title>
+
 <style>
-:root{--bg:#0b1220;--panel:#121d30;--panel2:#19263b;--text:#f3f6fb;--muted:#aab7cb;--accent:#a8f06a;--line:#2b3a52;--orange:#ffb45b}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top right,#1a2d42 0,transparent 42%),var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.65}
-.wrap{width:min(1040px,92%);margin:auto}.nav{display:flex;align-items:center;justify-content:space-between;padding:22px 0}.logo{font-weight:900;letter-spacing:.08em}.logo span{color:var(--accent)}.pill{border:1px solid var(--line);border-radius:999px;padding:7px 12px;color:var(--muted);font-size:.82rem}
-.hero{padding:36px 0 30px;display:grid;grid-template-columns:1.3fr .7fr;gap:24px;align-items:center}.eyebrow{color:var(--accent);font-size:.8rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase}.hero h1{font-size:clamp(2.3rem,6vw,4.7rem);line-height:1.04;letter-spacing:-.05em;margin:12px 0 18px}.hero h1 em{font-style:normal;color:var(--accent)}.hero p{color:var(--muted);max-width:600px}.hero-card{background:linear-gradient(145deg,#1c2b40,#111b2c);border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:0 18px 50px #0002}.big-number{font-size:3.2rem;font-weight:900;line-height:1.1;color:var(--accent)}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}.stat{background:#ffffff08;border-radius:14px;padding:12px}.stat b{display:block;font-size:1.15rem}.stat small{color:var(--muted)}
-section{margin:26px 0 38px}.section-head{display:flex;justify-content:space-between;gap:12px;align-items:end;margin-bottom:16px}.section-head h2{margin:0;font-size:1.55rem}.section-head p{margin:0;color:var(--muted);font-size:.9rem}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px}.card h3{margin:0 0 4px;font-size:1.08rem}.tag{display:inline-block;color:var(--accent);font-size:.78rem;font-weight:750;background:#a8f06a16;border:1px solid #a8f06a30;padding:3px 9px;border-radius:999px;margin:7px 0}.dose{font-size:1.3rem;font-weight:850;margin:5px 0}.muted{color:var(--muted);font-size:.92rem}.card .rest{font-size:.8rem;color:#c5d1e1;margin-top:8px}details{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}summary{cursor:pointer;color:var(--accent);font-weight:750;font-size:.9rem}details ol{padding-left:20px;color:var(--muted);font-size:.9rem}details li{margin:6px 0}details p{color:var(--muted);font-size:.9rem}details b{color:var(--text)}
-.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.tab,button,select{font:inherit}.tab{background:var(--panel);border:1px solid var(--line);color:var(--muted);padding:10px 15px;border-radius:12px;cursor:pointer}.tab.active{background:var(--accent);color:#14200f;border-color:var(--accent);font-weight:800}
-.tracker{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:20px}.tracker-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.tracker-top h3{margin:0}.progress{height:9px;border-radius:20px;background:#ffffff12;overflow:hidden;margin:14px 0 18px}.progress div{height:100%;width:0;background:var(--accent);transition:width .2s}.dayrow{display:flex;gap:12px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line)}.dayrow:last-of-type{border-bottom:0}.dayrow input{width:21px;height:21px;accent-color:var(--accent);flex-shrink:0}.dayname{font-weight:750}.daydesc{color:var(--muted);font-size:.88rem}.dayrow .status{margin-left:auto;color:var(--muted);font-size:.78rem;white-space:nowrap}
-select,textarea{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:11px;padding:10px 12px;max-width:100%}textarea{width:100%;min-height:84px;resize:vertical;margin-top:8px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}button.primary{background:var(--accent);border:0;color:#14200f;font-weight:850;padding:10px 15px;border-radius:11px;cursor:pointer}button.secondary{background:transparent;border:1px solid var(--line);color:var(--text);padding:10px 15px;border-radius:11px;cursor:pointer}.weeks{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.phase{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:17px}.phase .range{color:var(--accent);font-weight:850;font-size:.82rem}.phase h3{margin:6px 0}.phase p{color:var(--muted);font-size:.9rem;margin:0}
-.note{border-left:3px solid var(--orange);background:#ffb45b12;padding:14px 16px;border-radius:0 12px 12px 0;color:#e8d8c5;font-size:.9rem}.footer{padding:20px 0 38px;color:var(--muted);font-size:.82rem;text-align:center}
-@media(max-width:700px){.hero{grid-template-columns:1fr;padding-top:18px}.cards,.weeks{grid-template-columns:1fr}.hero-card{padding:18px}.stats{gap:6px}.stat{padding:9px}.section-head{align-items:start;flex-direction:column}.tracker{padding:15px}.dayrow .status{display:none}}
+
+:root{--bg:#0b1220;--panel:#121d30;--lime:#b8f34b;--text:#f4f7fb;--muted:#aab6c8}
+
+*{box-sizing:border-box}
+
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;line-height:1.7}
+
+.wrap{width:min(900px,92%);margin:auto}
+
+header{padding:22px 0;border-bottom:1px solid #29364b}
+
+.logo{font-size:22px;font-weight:900;letter-spacing:1px}
+
+.logo span{color:var(--lime)}
+
+.hero{padding:36px 0}
+
+.eyebrow{color:var(--lime);font-weight:bold;letter-spacing:2px}
+
+h1{font-size:clamp(36px,8vw,64px);line-height:1.1;margin:12px 0}
+
+p{color:var(--muted)}
+
+section{margin:32px 0}
+
+h2{font-size:26px}
+
+h3{margin:0 0 8px}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+
+.card,.panel{background:var(--panel);border:1px solid #29364b;border-radius:16px;padding:18px;margin:12px 0}
+
+.tag{color:var(--lime);font-weight:bold;font-size:13px}
+
+details{border-top:1px solid #29364b;margin-top:12px;padding-top:10px}
+
+summary{color:var(--lime);cursor:pointer;font-weight:bold}
+
+button{background:var(--lime);color:#101827;border:0;border-radius:10px;padding:12px 16px;font-size:15px;font-weight:bold;cursor:pointer;margin:4px 4px 4px 0}
+
+input,textarea,select{font:inherit;color:var(--text);background:#0b1220;border:1px solid #40506a;border-radius:9px;padding:10px;width:100%}
+
+input[type=checkbox]{accent-color:var(--lime);width:20px;height:20px}
+
+label{display:block;margin:10px 0 5px;font-weight:600}
+
+.check{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #29364b}
+
+.check input{width:20px}
+
+.bar{height:10px;background:#29364b;border-radius:20px;overflow:hidden}
+
+#progress{height:100%;width:0;background:var(--lime);transition:.2s}
+
+small{color:var(--muted)}
+
+textarea{min-height:90px;resize:vertical}
+
+.schedule-row{display:grid;grid-template-columns:80px 1fr;gap:10px;align-items:center;padding:7px 0}
+
+.schedule-row strong{color:var(--lime)}
+
+.actions{display:flex;flex-wrap:wrap;gap:6px}
+
+.status{color:var(--lime);min-height:1.5em}
+
+@media(max-width:480px){.schedule-row{grid-template-columns:65px 1fr}.card,.panel{padding:14px}}
+
 </style>
+
 </head>
+
 <body>
+
 <div class="wrap">
-<header class="nav"><div class="logo">HOOP <span>STRONG</span></div><div class="pill">HOME WORKOUT · 12 WEEKS</div></header>
+
+<header>
+
+<div class="logo">🏀 HOOP <span>STRONG</span></div>
+
+<small>Basketball × Strength / 12 WEEK PLAN</small>
+
+</header>
+
 <main>
+
 <div class="hero">
-  <div><div class="eyebrow">Basketball × Strength</div><h1>強くなる。<br><em>コートで活きる。</em></h1><p>胸・腕・腹筋を中心に、バスケに必要な脚と体幹も鍛える12週間プラン。器具なしで、自宅でコツコツ続けよう。</p></div>
-  <div class="hero-card"><div class="eyebrow">YOUR PROGRAM</div><div class="big-number">12<span style="font-size:1.35rem"> WEEKS</span></div><div class="muted">約3か月 · 自重トレーニング</div><div class="stats"><div class="stat"><b>20–30分</b><small>1回の目安</small></div><div class="stat"><b>週2–3回</b><small>筋トレ</small></div><div class="stat"><b>器具なし</b><small>自宅でOK</small></div></div></div>
+
+<div class="eyebrow">BUILD YOUR STRENGTH</div>
+
+<h1>強くなれ。<br>コートで証明しろ。</h1>
+
+<p>自宅でできる、バスケ部向け12週間トレーニング。正しいフォームと休養を大切にしよう。</p>
+
 </div>
+
 <section>
-<div class="section-head"><h2>01 / トレーニングメニュー</h2><p>セット間は60〜90秒を目安に休憩。</p></div>
-<div class="tabs"><button class="tab active" data-panel="A">A · 胸・腕・腹筋</button><button class="tab" data-panel="B">B · 脚・体幹</button></div>
-<div id="panelA" class="cards">
-  <article class="card"><h3>01　ノーマル腕立て伏せ</h3><span class="tag">胸・肩・腕</span><div class="dose">8–15回 × 3セット</div><div class="muted">頭からかかとを一直線に。反動を使わず、胸を意識して押し上げる。</div><div class="rest">休憩：60〜90秒</div><details><summary>詳しいやり方・コツ</summary><ol><li>床にうつ伏せになり、手を肩幅より少し広めに置く。指先は前向き。</li><li>頭からかかとまでを一直線にして、お腹とお尻に軽く力を入れる。</li><li>ひじを斜め後ろに曲げながら、胸を床に近づける。</li><li>床を押して、最初の姿勢まで戻る。下ろすときはゆっくり。</li></ol><p><b>コツ：</b>腰を反らさず、ひじを真横に開きすぎない。難しければ膝を床につける。</p><p><b>よくあるミス：</b>お尻だけが上がる、腰が落ちる、反動で上下する。</p></details></article>
-  <article class="card"><h3>02　ナロー腕立て伏せ</h3><span class="tag">腕の裏側・胸</span><div class="dose">6–10回 × 2セット</div><div class="muted">手幅は肩幅程度か少し狭め。難しければ膝をついてフォームを優先。</div><div class="rest">休憩：60〜90秒</div><details><summary>詳しいやり方・コツ</summary><ol><li>通常の腕立て伏せの姿勢を作り、手を肩幅程度か少し狭めに置く。</li><li>ひじを体の近くに沿わせながら、胸をゆっくり下ろす。</li><li>手のひらで床を押し、体を一直線に保って戻る。</li></ol><p><b>コツ：</b>手を無理にくっつける必要はない。手首やひじが痛くならない幅に調整しよう。</p><p><b>難しい場合：</b>膝をついて行うか、ノーマル腕立て伏せに変更する。</p></details></article>
-  <article class="card"><h3>03　クランチ</h3><span class="tag">腹筋</span><div class="dose">12–20回 × 3セット</div><div class="muted">肩甲骨が少し浮くところまで上体を丸める。首を引っ張らない。</div><div class="rest">休憩：45〜60秒</div><details><summary>詳しいやり方・コツ</summary><ol><li>仰向けになり、膝を曲げて足裏を床につける。手は胸の前か太ももに添える。</li><li>息を吐きながら、お腹を丸めるように肩甲骨が少し浮くところまで上体を上げる。</li><li>ゆっくり元に戻る。毎回、床に勢いよく倒れない。</li></ol><p><b>コツ：</b>首を手で引っ張らず、目線は斜め上へ。上体を高く上げすぎなくてOK。</p><p><b>よくあるミス：</b>勢いで起き上がる、首だけを動かす、息を止める。</p></details></article>
-  <article class="card"><h3>04　プランク</h3><span class="tag">腹筋・体幹</span><div class="dose">30–45秒 × 2セット</div><div class="muted">体を一直線に保つ。腰が落ちたり、痛みが出たりする前に終了。</div><div class="rest">休憩：45〜60秒</div><details><summary>詳しいやり方・コツ</summary><ol><li>うつ伏せから、ひじを肩の真下に置き、前腕とつま先で体を支える。</li><li>お腹とお尻に軽く力を入れ、頭からかかとまで一直線にする。</li><li>自然に呼吸しながら姿勢を保ち、腰が落ちる前に終了する。</li></ol><p><b>コツ：</b>床をひじで軽く押し、腰を反らせない。秒数よりフォーム優先。</p><p><b>難しい場合：</b>膝を床につけて行う。</p></details></article>
-</div>
-<div id="panelB" class="cards" hidden>
-  <article class="card"><h3>01　ブルガリアンスクワット</h3><span class="tag">脚・お尻</span><div class="dose">左右各8–10回 × 2セット</div><div class="muted">後ろ足は安定した低い台へ。難しければ通常のスクワットかリバースランジに変更。</div><div class="rest">休憩：60〜90秒</div><details><summary>詳しいやり方・コツ</summary><ol><li>安定した低めの台に後ろ足の甲を乗せる。前足は床につけ、足幅は腰幅程度。</li><li>上体を起こし、前足のかかとに体重を乗せながら膝を曲げる。</li><li>前足で床を押し、ゆっくり立ち上がる。片側を終えたら反対側も行う。</li></ol><p><b>コツ：</b>前足の膝はつま先と同じ方向へ。ふらつく場合は壁の近くで行う。</p><p><b>簡単にする：</b>後ろ足を台に乗せず、リバースランジか通常のスクワットに変更。</p></details></article>
-  <article class="card"><h3>02　バードドッグ</h3><span class="tag">背中・体幹</span><div class="dose">左右各10回 × 2セット</div><div class="muted">四つんばいで反対の手と脚を伸ばす。腰を傾けずゆっくり行う。</div><div class="rest">休憩：45〜60秒</div><details><summary>詳しいやり方・コツ</summary><ol><li>四つんばいになり、手を肩の下、膝を股関節の下に置く。</li><li>お腹に軽く力を入れ、右手と左脚をゆっくり伸ばす。</li><li>腰をひねらずに戻し、反対側も同じように行う。</li></ol><p><b>コツ：</b>高く伸ばすより、背中と骨盤を安定させることを優先。バランスが難しければ、手だけ・脚だけを伸ばす。</p></details></article>
-  <article class="card"><h3>03　グルートブリッジ</h3><span class="tag">お尻・股関節</span><div class="dose">15回 × 2セット</div><div class="muted">仰向けで膝を曲げ、お尻を持ち上げる。腰を反らせない。</div><div class="rest">休憩：45〜60秒</div><details><summary>詳しいやり方・コツ</summary><ol><li>仰向けで膝を曲げ、足を腰幅程度に開く。</li><li>お腹に軽く力を入れ、かかとで床を押してお尻を持ち上げる。</li><li>肩から膝がだいたい一直線になったら一瞬止まり、ゆっくり下ろす。</li></ol><p><b>コツ：</b>腰を反らせて高く上げすぎない。お尻の筋肉を使う意識で。</p></details></article>
-  <article class="card"><h3>04　ディフェンス・スライド</h3><span class="tag">横移動・敏捷性</span><div class="dose">15–20秒 × 3セット</div><div class="muted">低い姿勢で左右に動き、足を交差させない。滑らない場所で行う。</div><div class="rest">休憩：45〜60秒</div><details><summary>詳しいやり方・コツ</summary><ol><li>足を肩幅より少し広めにし、膝を軽く曲げて腰を落とす。</li><li>右へ動くときは右足から踏み出し、左足を引き寄せる。足を交差させない。</li><li>数歩進んだら反対方向へ切り返す。小さく静かな足音で動こう。</li></ol><p><b>コツ：</b>胸を起こし、視線は前。速さよりも姿勢とコントロールを優先する。</p><p><b>安全：</b>滑らない床で、周囲にぶつかる物がないことを確認する。</p></details></article>
-</div>
-<p class="muted">各セッションの前に3〜5分ウォームアップ。種目間は30〜60秒休み、フォームが崩れる前にセットを終えよう。</p>
-</section>
-<section>
-<div class="section-head"><h2>02 / 12週間の成長プラン</h2><p>急に負荷を上げず、少しずつ。</p></div>
-<div class="weeks">
-<div class="phase"><div class="range">WEEK 01–04</div><h3>基礎づくり</h3><p>フォームを覚え、無理のない回数で安定して続ける。余裕を残して終える。</p></div>
-<div class="phase"><div class="range">WEEK 05–08</div><h3>筋力アップ</h3><p>目標回数を楽にできるようになったら、1セット1〜2回だけ増やすか、動作をゆっくりに。</p></div>
-<div class="phase"><div class="range">WEEK 09–12</div><h3>継続・安定</h3><p>フォームを保てる範囲で回数を調整。部活で疲れている日は負荷を増やさない。</p></div>
-</div>
-</section>
-<section>
-<div class="section-head"><h2>03 / トレーニング記録</h2><p>このブラウザに自動保存されるよ。</p></div>
-<div class="tracker">
-<div class="tracker-top"><h3 id="weekTitle">1週目の記録</h3><label>週を選択　<select id="weekSelect" aria-label="週を選択"></select></label></div>
-<div class="progress"><div id="progressBar"></div></div><div id="progressText" class="muted">0 / 3 回完了</div>
-<div id="checklist"></div>
-<label for="memo" style="display:block;margin-top:18px;font-weight:750">今週のメモ・感想</label><textarea id="memo" placeholder="例：腕立て伏せが前より安定した／部活で疲れていたので休んだ"></textarea>
-<div class="actions"><button class="primary" id="saveBtn">記録を保存</button><button class="secondary" id="exportBtn">記録をコピー</button><button class="secondary" id="resetWeekBtn">この週をリセット</button></div>
-<p id="feedback" class="muted" role="status"></p>
-</div>
-</section>
-<section>
-<div class="section-head"><h2>04 / 週間スケジュール例</h2></div>
-<div class="card">
-<div class="dayrow"><div><div class="dayname">月曜日</div><div class="daydesc">A：胸・腕・腹筋</div></div><span class="status">筋トレ</span></div>
-<div class="dayrow"><div><div class="dayname">火曜日</div><div class="daydesc">バスケ部・回復</div></div><span class="status">回復</span></div>
-<div class="dayrow"><div><div class="dayname">水曜日</div><div class="daydesc">B：脚・体幹</div></div><span class="status">筋トレ</span></div>
-<div class="dayrow"><div><div class="dayname">木曜日</div><div class="daydesc">バスケ部・回復</div></div><span class="status">回復</span></div>
-<div class="dayrow"><div><div class="dayname">金曜日</div><div class="daydesc">A：胸・腕・腹筋</div></div><span class="status">筋トレ</span></div>
-<div class="dayrow"><div><div class="dayname">土・日曜日</div><div class="daydesc">部活の負荷に合わせて休養</div></div><span class="status">回復</span></div>
-</div>
-</section>
-<section>
-<div class="section-head"><h2>05 / 成長のためのルール</h2></div>
+
+<h2>01 / トレーニング A</h2>
+
+<p>胸・腕・お腹｜目安20〜25分</p>
+
 <div class="cards">
-<div class="card"><h3>🍚 食事</h3><p class="muted">ご飯、肉、魚、卵、豆腐、乳製品などを組み合わせて、3食しっかり食べる。</p></div>
-<div class="card"><h3>🌙 睡眠</h3><p class="muted">中学生は8〜10時間を目安に睡眠を取り、体の回復を大切にする。</p></div>
-<div class="card"><h3>🧊 休養</h3><p class="muted">強い筋肉痛や疲労がある日は休む。部活の練習や試合も考えて調整する。</p></div>
-<div class="card"><h3>✅ フォーム</h3><p class="muted">回数より正しい動き。鋭い痛みや関節の痛みが出たら中止する。</p></div>
+
+<article class="card">
+
+<div class="tag">CHEST / ARMS</div><h3>ノーマル腕立て伏せ</h3>
+
+<p>8〜15回 × 3セット</p>
+
+<details><summary>詳しいやり方・コツ</summary><p>手は肩幅より少し広く。頭からかかとまでを一直線にし、胸をゆっくり床へ近づけて押し戻す。腰を反らさない。難しければ膝をついて行う。</p></details>
+
+</article>
+
+<article class="card">
+
+<div class="tag">TRICEPS</div><h3>ナロー腕立て伏せ</h3>
+
+<p>6〜10回 × 2セット</p>
+
+<details><summary>詳しいやり方・コツ</summary><p>手を肩幅程度に置き、肘を体の近くに向けて曲げ伸ばしする。手を近づけすぎなくてOK。手首や肘が痛ければ中止し、膝をついて行う。</p></details>
+
+</article>
+
+<article class="card">
+
+<div class="tag">ABS</div><h3>クランチ</h3>
+
+<p>12〜20回 × 3セット</p>
+
+<details><summary>詳しいやり方・コツ</summary><p>仰向けで膝を曲げ、息を吐きながら肩甲骨が少し浮く程度に上体を丸める。首を引っ張らず、反動を使わない。</p></details>
+
+</article>
+
+<article class="card">
+
+<div class="tag">CORE</div><h3>プランク</h3>
+
+<p>30〜45秒 × 2セット</p>
+
+<details><summary>詳しいやり方・コツ</summary><p>肘を肩の真下に置く。頭・背中・腰・脚を一直線にし、自然に呼吸する。腰が落ちたり上がったりする前に終了。難しければ膝をつく。</p></details>
+
+</article>
+
 </div>
+
 </section>
-<div class="note">安全第一：筋トレは毎回限界まで行う必要はないよ。部活で強い負荷がかかった日は追加トレーニングを減らして、休養を優先しよう。</div>
-</main>
-<footer class="footer">HOOP STRONG · 続けることが、一番の成長。</footer>
+
+<section>
+
+<h2>02 / トレーニング B</h2>
+
+<p>脚・体幹・バスケの動き｜目安20分</p>
+
+<div class="cards">
+
+<article class="card"><h3>ブルガリアンスクワット</h3><p>左右8〜10回 × 2セット</p><details><summary>詳しいやり方・コツ</summary><p>後ろ足を低くて安定した台に乗せ、前足に体重をかけてゆっくり腰を下げる。前足のかかとを浮かせず、膝はつま先と同じ方向へ。難しければ普通のスクワットや後ろランジに変更。</p></details></article>
+
+<article class="card"><h3>バードドッグ</h3><p>左右10回 × 2セット</p><details><summary>詳しいやり方・コツ</summary><p>四つんばいから右腕と左脚を伸ばし、戻して反対側も行う。腰や骨盤を傾けず、ゆっくり動く。難しければ腕か脚の片方だけ伸ばす。</p></details></article>
+
+<article class="card"><h3>グルートブリッジ</h3><p>15回 × 2セット</p><details><summary>詳しいやり方・コツ</summary><p>仰向けで膝を曲げ、足裏で床を押してお尻を持ち上げる。肩から膝がだいたい一直線になったらゆっくり下ろす。腰を反らしすぎない。</p></details></article>
+
+<article class="card"><h3>ディフェンス・スライド</h3><p>15〜20秒 × 3セット</p><details><summary>詳しいやり方・コツ</summary><p>膝を軽く曲げて腰を落とし、横へ小さく素早く移動。足を交差させず、滑らない平らな場所で行う。</p></details></article>
+
 </div>
+
+</section>
+
+<section>
+
+<h2>03 / 12週間の進め方</h2>
+
+<div class="panel">
+
+<b>1〜4週</b><p>正しいフォームを覚える。余裕を残して終える。</p>
+
+<b>5〜8週</b><p>フォームが崩れなければ、各セット1〜2回ずつ増やす。</p>
+
+<b>9〜12週</b><p>無理のない回数で安定したフォームを続ける。</p>
+
+</div>
+
+</section>
+
+<section>
+
+<h2>04 / 毎週のスケジュールと感想</h2>
+
+<p>週ごとに予定・目標・感想を入力して保存できるよ。内容はこのブラウザ内に保存されるよ。</p>
+
+<div class="panel">
+
+<label for="week">記録する週</label>
+
+<select id="week"></select>
+
+<label for="goal">今週の目標</label>
+
+<textarea id="goal" placeholder="例：フォームを意識して、休養も大切にする"></textarea>
+
+<h3 style="margin-top:18px">週間スケジュール</h3>
+
+<div id="schedule"></div>
+
+<label for="good">今週できたこと</label>
+
+<textarea id="good" placeholder="例：予定したトレーニングを無理なくできた"></textarea>
+
+<label for="hard">難しかったこと・気づいたこと</label>
+
+<textarea id="hard" placeholder="例：部活の練習がきつい日は疲れが残った"></textarea>
+
+<label for="next">来週に向けて</label>
+
+<textarea id="next" placeholder="例：疲れている日は回数を減らしてフォームを優先する"></textarea>
+
+<div class="actions">
+
+<button id="save">この週を保存</button>
+
+<button id="clear" type="button">この週を消去</button>
+
+<button id="export" type="button">記録をテキストで出力</button>
+
+</div>
+
+<p id="status" class="status" aria-live="polite"></p>
+
+</div>
+
+</section>
+
+<section>
+
+<h2>05 / トレーニング記録</h2>
+
+<p>できたメニューにチェックを入れよう。</p>
+
+<div class="bar"><div id="progress"></div></div>
+
+<p id="count">0 / 3 回完了</p>
+
+<div class="panel">
+
+<label class="check"><input type="checkbox" class="done" data-i="0"> 月曜日：トレーニング A</label>
+
+<label class="check"><input type="checkbox" class="done" data-i="1"> 水曜日：トレーニング B</label>
+
+<label class="check"><input type="checkbox" class="done" data-i="2"> 金曜日：トレーニング A</label>
+
+<button id="resetChecks" type="button">チェックをリセット</button>
+
+</div>
+
+</section>
+
+<section>
+
+<h2>06 / 忘れずに！</h2>
+
+<div class="panel">
+
+<p>・最初に3〜5分、軽く体を動かして準備する。</p>
+
+<p>・セット間は45〜90秒ほど休む。</p>
+
+<p>・バスケの練習がきつい日は筋トレを減らすか休む。</p>
+
+<p>・睡眠とバランスのよい食事も大切。</p>
+
+<p>・鋭い痛みや関節の痛みがあれば、すぐに中止する。</p>
+
+</div>
+
+</section>
+
+<footer><small>HOOP STRONG · 継続は力なり。</small></footer>
+
+</main>
+
+</div>
+
 <script>
-const sessions=[{id:"A",day:"月曜日",task:"A：胸・腕・腹筋"},{id:"B",day:"水曜日",task:"B：脚・体幹"},{id:"A2",day:"金曜日",task:"A：胸・腕・腹筋"}];
-const storeKey="hoopStrong12WeekV1";
-let state={checks:{},memos:{}};
-try{state=JSON.parse(localStorage.getItem(storeKey))||state}catch(e){}
-const select=document.getElementById("weekSelect");
-for(let i=1;i<=12;i++){let o=document.createElement("option");o.value=i;o.textContent=i+"週目";select.appendChild(o)}
-function save(){try{localStorage.setItem(storeKey,JSON.stringify(state));return true}catch(e){return false}}
-function key(){return String(select.value)}
-function render(){
- const w=key();document.getElementById("weekTitle").textContent=w+"週目の記録";
- const list=document.getElementById("checklist");list.innerHTML="";
- sessions.forEach((s,i)=>{const id=w+"-"+s.id;const row=document.createElement("label");row.className="dayrow";const cb=document.createElement("input");cb.type="checkbox";cb.checked=!!state.checks[id];cb.addEventListener("change",()=>{state.checks[id]=cb.checked;save();renderProgress();});const textWrap=document.createElement("div");const title=document.createElement("div");title.className="dayname";title.textContent=s.day;const desc=document.createElement("div");desc.className="daydesc";desc.textContent=s.task;textWrap.append(title,desc);const status=document.createElement("span");status.className="status";status.textContent=cb.checked?"完了":"未完了";row.append(cb,textWrap,status);list.appendChild(row)});
- document.getElementById("memo").value=state.memos[w]||"";renderProgress();document.getElementById("feedback").textContent="";
+
+const days=['月曜日','火曜日','水曜日','木曜日','金曜日','土曜日','日曜日'];
+
+const scheduleEl=document.getElementById('schedule');
+
+scheduleEl.innerHTML=days.map((d,i)=>
+
+`<div class="schedule-row"><strong>${d}</strong><input id="day${i}" placeholder="${['トレーニング A','休養・ストレッチ','トレーニング B','部活','トレーニング A','部活・休養','休養'][i]}" aria-label="${d}の予定"></div>`
+
+).join('');
+
+const weekEl=document.getElementById('week');
+
+for(let i=1;i<=12;i++){
+
+ const o=document.createElement('option');
+
+ o.value=i;
+
+ o.textContent=`${i}週目`;
+
+ weekEl.appendChild(o);
+
 }
-function renderProgress(){const w=key();const n=sessions.filter(s=>state.checks[w+"-"+s.id]).length;document.getElementById("progressBar").style.width=(n/3*100)+"%";document.getElementById("progressText").textContent=n+" / 3 回完了";}
-document.querySelectorAll(".tab").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b===btn));document.getElementById("panelA").hidden=btn.dataset.panel!=="A";document.getElementById("panelB").hidden=btn.dataset.panel!=="B";}));
-select.addEventListener("change",render);
-document.getElementById("saveBtn").addEventListener("click",()=>{state.memos[key()]=document.getElementById("memo").value;const ok=save();document.getElementById("feedback").textContent=ok?"保存したよ！次に開いたときも、このブラウザに記録が残るよ。":"保存できなかったため、ブラウザの設定を確認してね。";});
-document.getElementById("memo").addEventListener("input",()=>{state.memos[key()]=document.getElementById("memo").value;save();});
-document.getElementById("exportBtn").addEventListener("click",async()=>{state.memos[key()]=document.getElementById("memo").value;save();const w=key();const out=[w+"週目のトレーニング記録",...sessions.map(s=>s.day+"："+s.task+"："+(state.checks[w+"-"+s.id]?"完了":"未完了")),"メモ："+(state.memos[w]||"未記入")].join("\n");try{await navigator.clipboard.writeText(out);document.getElementById("feedback").textContent="記録をコピーしたよ！"}catch(e){const ta=document.createElement("textarea");ta.value=out;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();document.getElementById("feedback").textContent="記録をコピーしたよ！"}});
-document.getElementById("resetWeekBtn").addEventListener("click",()=>{if(confirm("選択した週のチェックとメモをリセットする？")){const w=key();sessions.forEach(s=>delete state.checks[w+"-"+s.id]);delete state.memos[w];save();render();document.getElementById("feedback").textContent="この週の記録をリセットしたよ。"}});
-render();
+
+const fields=['goal','good','hard','next'];
+
+function key(){return 'hoop-weekly-'+weekEl.value}
+
+function loadWeek(){
+
+ let data={};
+
+ try{data=JSON.parse(localStorage.getItem(key())||'{}')}catch(e){}
+
+ fields.forEach(id=>document.getElementById(id).value=data[id]||'');
+
+ days.forEach((d,i)=>document.getElementById('day'+i).value=(data.days||[])[i]||'');
+
+ document.getElementById('status').textContent='';
+
+}
+
+function saveWeek(){
+
+ const data={};
+
+ fields.forEach(id=>data[id]=document.getElementById(id).value);
+
+ data.days=days.map((d,i)=>document.getElementById('day'+i).value);
+
+ try{
+
+  localStorage.setItem(key(),JSON.stringify(data));
+
+  document.getElementById('status').textContent='保存したよ！このブラウザで見返せるよ。';
+
+ }catch(e){
+
+  document.getElementById('status').textContent='保存できなかったよ。ブラウザの設定を確認してね。';
+
+ }
+
+}
+
+weekEl.addEventListener('change',loadWeek);
+
+document.getElementById('save').addEventListener('click',saveWeek);
+
+document.getElementById('clear').addEventListener('click',()=>{
+
+ if(confirm('この週の記録を消去する？')){
+
+  localStorage.removeItem(key());
+
+  loadWeek();
+
+  document.getElementById('status').textContent='この週の記録を消去したよ。';
+
+ }
+
+});
+
+document.getElementById('export').addEventListener('click',()=>{
+
+ const lines=[
+
+ `HOOP STRONG ${weekEl.value}週目`,
+
+ `今週の目標：${document.getElementById('goal').value}`,
+
+ '週間スケジュール：',
+
+ ...days.map((d,i)=>`${d}：${document.getElementById('day'+i).value}`),
+
+ `できたこと：${document.getElementById('good').value}`,
+
+ `難しかったこと・気づき：${document.getElementById('hard').value}`,
+
+ `来週に向けて：${document.getElementById('next').value}`
+
+ ];
+
+ const blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'});
+
+ const a=document.createElement('a');
+
+ a.href=URL.createObjectURL(blob);
+
+ a.download=`hoop-strong-week-${weekEl.value}.txt`;
+
+ a.click();
+
+ URL.revokeObjectURL(a.href);
+
+});
+
+const checks=[...document.querySelectorAll('.done')];
+
+function update(){
+
+ const n=checks.filter(c=>c.checked).length;
+
+ document.getElementById('count').textContent=n+' / 3 回完了';
+
+ document.getElementById('progress').style.width=(n/3*100)+'%';
+
+}
+
+checks.forEach((c,i)=>{
+
+ c.checked=localStorage.getItem('hoop-check-'+i)==='1';
+
+ c.addEventListener('change',()=>{
+
+  localStorage.setItem('hoop-check-'+i,c.checked?'1':'0');
+
+  update();
+
+ });
+
+});
+
+document.getElementById('resetChecks').addEventListener('click',()=>{
+
+ checks.forEach((c,i)=>{
+
+  c.checked=false;
+
+  localStorage.removeItem('hoop-check-'+i);
+
+ });
+
+ update();
+
+});
+
+loadWeek();
+
+update();
+
 </script>
+
 </body>
+
 </html>

@@ -1,0 +1,467 @@
+
+
+<!DOCTYPE html>
+
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>HOOP STRONG PLUS</title>
+
+<style>
+
+:root{--bg:#0b1220;--panel:#121d30;--lime:#b8f34b;--text:#f4f7fb;--muted:#aab6c8}
+
+*{box-sizing:border-box}
+
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.7}
+
+.wrap{width:min(900px,92%);margin:auto}
+
+header{padding:22px 0;border-bottom:1px solid #29364b}
+
+.logo{font-size:22px;font-weight:900}.logo span{color:var(--lime)}
+
+.hero{padding:36px 0}.eyebrow,.tag{color:var(--lime);font-weight:bold}
+
+h1{font-size:clamp(36px,8vw,64px);line-height:1.1}
+
+h2{font-size:26px}section{margin:32px 0}
+
+p,small{color:var(--muted)}
+
+.cards,.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+
+.card,.panel{background:var(--panel);border:1px solid #29364b;border-radius:16px;padding:18px;margin:12px 0}
+
+details{border-top:1px solid #29364b;margin-top:12px;padding-top:10px}
+
+summary{color:var(--lime);cursor:pointer;font-weight:bold}
+
+button{background:var(--lime);color:#101827;border:0;border-radius:10px;padding:12px 16px;font-size:15px;font-weight:bold;cursor:pointer;margin:4px}
+
+input,textarea,select{font:inherit;color:var(--text);background:#0b1220;border:1px solid #40506a;border-radius:9px;padding:10px;width:100%}
+
+input[type=checkbox]{accent-color:var(--lime);width:20px;height:20px}
+
+label{display:block;margin:10px 0 5px;font-weight:600}
+
+.choice-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+
+.choice{display:flex;gap:8px;align-items:center;background:#0b1220;border:1px solid #40506a;border-radius:10px;padding:10px}
+
+.choice input{width:18px}
+
+.schedule-row,.day-track{display:grid;grid-template-columns:80px minmax(0,1fr) 28px;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid #29364b}
+
+.schedule-row{grid-template-columns:80px 1fr}
+
+.schedule-row strong{color:var(--lime)}
+
+.actions{display:flex;flex-wrap:wrap;gap:6px}
+
+.status{color:var(--lime);min-height:1.5em}
+
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+
+.stat{background:#0b1220;border:1px solid #29364b;border-radius:12px;padding:14px}
+
+.stat strong{display:block;color:var(--lime);font-size:26px}
+
+.chart{display:grid;grid-template-columns:repeat(12,minmax(12px,1fr));gap:6px;align-items:end;height:150px;margin:18px 0 8px}
+
+.chart-col{height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px}
+
+.chart-bar{width:100%;max-width:34px;background:#29364b;border-radius:6px 6px 2px 2px;height:100%;position:relative;overflow:hidden}
+
+.chart-fill{position:absolute;bottom:0;left:0;width:100%;background:var(--lime)}
+
+.chart-label{font-size:10px;color:var(--muted)}
+
+.exercise-result{border-left:3px solid var(--lime);padding:8px 12px;margin:8px 0;background:#0b1220;border-radius:0 8px 8px 0}
+
+.bar{height:10px;background:#29364b;border-radius:20px;overflow:hidden}
+
+#progress{height:100%;width:0;background:var(--lime)}
+
+@media(max-width:480px){.schedule-row{grid-template-columns:65px 1fr}.day-track{grid-template-columns:65px minmax(0,1fr) 24px}.chart{gap:3px}.card,.panel{padding:14px}}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="wrap">
+
+<header><div class="logo">🏀 HOOP <span>STRONG PLUS</span></div><small>Basketball × Strength / 12 WEEK PLAN</small></header>
+
+<main>
+
+<div class="hero">
+
+<div class="eyebrow">BUILD YOUR STRENGTH</div>
+
+<h1>強くなれ。<br>コートで証明しろ。</h1>
+
+<p>自宅でできるバスケ向けトレーニング。正しいフォームと休養を大切にしよう。</p>
+
+</div>
+
+<section>
+
+<h2>01 / トレーニング A</h2><p>胸・腕・お腹</p>
+
+<div class="cards">
+
+<article class="card"><div class="tag">CHEST / ARMS</div><h3>腕立て伏せ</h3><p>8〜15回 × 3セット</p><details><summary>やり方・コツ</summary><p>頭からかかとまでを一直線にし、胸をゆっくり床へ近づける。腰を反らさない。難しければ膝をついて行う。</p></details></article>
+
+<article class="card"><div class="tag">TRICEPS</div><h3>ナロー腕立て伏せ</h3><p>6〜10回 × 2セット</p><details><summary>やり方・コツ</summary><p>手を肩幅程度に置き、肘を体の近くに向ける。手首や肘が痛ければ中止する。</p></details></article>
+
+<article class="card"><div class="tag">ABS</div><h3>クランチ</h3><p>12〜20回 × 3セット</p><details><summary>やり方・コツ</summary><p>息を吐きながら肩甲骨が少し浮く程度に上体を丸める。首を引っ張らず、反動を使わない。</p></details></article>
+
+<article class="card"><div class="tag">CORE</div><h3>プランク</h3><p>30〜45秒 × 2セット</p><details><summary>やり方・コツ</summary><p>肘を肩の真下に置き、体を一直線にする。呼吸を止めず、腰が落ちる前に終了。</p></details></article>
+
+</div>
+
+</section>
+
+<section>
+
+<h2>02 / トレーニング B</h2><p>脚・体幹・バスケの動き</p>
+
+<div class="cards">
+
+<article class="card"><h3>スクワット</h3><p>8〜12回 × 2セット</p><details><summary>やり方・コツ</summary><p>足を肩幅程度に開き、膝とつま先を同じ方向にしてゆっくり腰を下げる。</p></details></article>
+
+<article class="card"><h3>バードドッグ</h3><p>左右10回 × 2セット</p><details><summary>やり方・コツ</summary><p>四つんばいから反対側の腕と脚を伸ばす。腰を傾けず、ゆっくり行う。</p></details></article>
+
+<article class="card"><h3>グルートブリッジ</h3><p>15回 × 2セット</p><details><summary>やり方・コツ</summary><p>仰向けで膝を曲げ、足裏で床を押してお尻を持ち上げる。腰を反らしすぎない。</p></details></article>
+
+<article class="card"><h3>ディフェンス・スライド</h3><p>15〜20秒 × 3セット</p><details><summary>やり方・コツ</summary><p>膝を軽く曲げて腰を落とし、足を交差させずに横へ移動する。</p></details></article>
+
+</div>
+
+</section>
+
+<section>
+
+<h2>03 / 12週間の進め方</h2>
+
+<div class="panel"><b>1〜4週</b><p>正しいフォームを覚える。</p><b>5〜8週</b><p>フォームが崩れなければ少しずつ回数を増やす。</p><b>9〜12週</b><p>無理のない範囲で継続する。</p></div>
+
+</section>
+
+<section>
+
+<h2>04 / あなた専用のトレーニング設定</h2>
+
+<p>鍛えたい場所・レベル・目的を選んでメニューを作ろう。</p>
+
+<div class="panel">
+
+<div class="grid2">
+
+<div><label for="level">今のレベル</label><select id="level"><option value="beginner">初心者</option><option value="intermediate">中級者</option><option value="advanced">上級者</option></select></div>
+
+<div><label for="purpose">トレーニングの目的</label><select id="purpose"><option value="general">全身をバランスよく</option><option value="strength">筋力をつけたい</option><option value="jump">ジャンプ・脚の力</option><option value="agility">敏捷性・ディフェンス</option><option value="endurance">体幹・持久力</option></select></div>
+
+</div>
+
+<label>鍛えたい場所（複数選択OK）</label>
+
+<div class="choice-list" id="muscleChoices">
+
+<label class="choice"><input type="checkbox" value="chest">胸</label>
+
+<label class="choice"><input type="checkbox" value="arms">腕・肩</label>
+
+<label class="choice"><input type="checkbox" value="core">お腹・体幹</label>
+
+<label class="choice"><input type="checkbox" value="legs">脚</label>
+
+<label class="choice"><input type="checkbox" value="glutes">お尻</label>
+
+<label class="choice"><input type="checkbox" value="back">背中</label>
+
+<label class="choice"><input type="checkbox" value="agility">バスケの動き</label>
+
+</div>
+
+<button id="makePlan" type="button">自分に合うメニューを作る</button>
+
+<button id="saveProfile" type="button">設定を保存</button>
+
+<p id="profileStatus" class="status"></p>
+
+<div id="planResult"><p>場所と目的を選んでボタンを押してね。</p></div>
+
+</div>
+
+</section>
+
+<section>
+
+<h2>05 / 成長グラフと継続記録</h2>
+
+<div class="panel">
+
+<div class="stat-grid">
+
+<div class="stat"><small>トレーニング日数</small><strong id="totalDays">0</strong><small>日</small></div>
+
+<div class="stat"><small>記録した週</small><strong id="loggedWeeks">0</strong><small>週 / 12週</small></div>
+
+<div class="stat"><small>連続記録</small><strong id="streakWeeks">0</strong><small>週</small></div>
+
+</div>
+
+<p>週ごとの予定達成率</p><div class="chart" id="growthChart"></div>
+
+<small>達成率＝予定を書いた日のうち、実施にチェックした割合。</small>
+
+</div>
+
+</section>
+
+<section>
+
+<h2>06 / 毎週のスケジュールと感想</h2>
+
+<div class="panel">
+
+<label for="week">記録する週</label><select id="week"></select>
+
+<label for="goal">今週の目標</label><textarea id="goal" placeholder="今週頑張ること"></textarea>
+
+<h3>週間スケジュール</h3><div id="schedule"></div>
+
+<label for="good">今週できたこと</label><textarea id="good" placeholder="できたことを書こう"></textarea>
+
+<label for="hard">難しかったこと・気づき</label><textarea id="hard" placeholder="課題や気づいたこと"></textarea>
+
+<label for="next">来週に向けて</label><textarea id="next" placeholder="来週の目標"></textarea>
+
+<div class="actions"><button id="save">この週を保存</button><button id="clear" type="button">この週を消去</button><button id="export" type="button">記録を出力</button></div>
+
+<p id="status" class="status"></p>
+
+</div>
+
+</section>
+
+<section>
+
+<h2>07 / トレーニング記録</h2>
+
+<div class="bar"><div id="progress"></div></div><p id="count">0 / 3 回完了</p>
+
+<div class="panel">
+
+<label><input type="checkbox" class="done" data-i="0"> 月曜日：トレーニング A</label>
+
+<label><input type="checkbox" class="done" data-i="1"> 水曜日：トレーニング B</label>
+
+<label><input type="checkbox" class="done" data-i="2"> 金曜日：トレーニング A</label>
+
+<button id="resetChecks" type="button">チェックをリセット</button>
+
+</div>
+
+</section>
+
+<section><h2>08 / 忘れずに！</h2><div class="panel">
+
+<p>・最初に3〜5分、軽く体を動かして準備する。</p>
+
+<p>・セット間は45〜90秒ほど休む。</p>
+
+<p>・部活で疲れている日は筋トレを減らすか休む。</p>
+
+<p>・睡眠とバランスのよい食事も大切。</p>
+
+<p>・鋭い痛みや関節の痛みがあれば、すぐに中止する。</p>
+
+</div></section>
+
+<footer><small>HOOP STRONG PLUS · 継続は力なり。</small></footer>
+
+</main>
+
+</div>
+
+<script>
+
+const days=['月曜日','火曜日','水曜日','木曜日','金曜日','土曜日','日曜日'];
+
+const scheduleEl=document.getElementById('schedule');
+
+scheduleEl.innerHTML=days.map((d,i)=>`<div class="day-track"><strong>${d}</strong><input id="day${i}" placeholder="${['筋トレ A','休養・ストレッチ','筋トレ B','部活','筋トレ A','部活・休養','休養'][i]}" aria-label="${d}の予定"><input type="checkbox" id="doneDay${i}" aria-label="${d}に実施"></div>`).join('');
+
+const weekEl=document.getElementById('week');
+
+for(let i=1;i<=12;i++){const o=document.createElement('option');o.value=i;o.textContent=`${i}週目`;weekEl.appendChild(o);}
+
+const fields=['goal','good','hard','next'];
+
+function key(){return 'hoop-weekly-'+weekEl.value;}
+
+function readWeek(w){try{return JSON.parse(localStorage.getItem('hoop-weekly-'+w)||'{}');}catch(e){return {};}}
+
+function loadWeek(){
+
+const d=readWeek(weekEl.value);
+
+fields.forEach(id=>document.getElementById(id).value=d[id]||'');
+
+days.forEach((x,i)=>{document.getElementById('day'+i).value=(d.days||[])[i]||'';document.getElementById('doneDay'+i).checked=!!((d.completed||[])[i]);});
+
+document.getElementById('status').textContent='';renderGrowth();
+
+}
+
+function saveWeek(){
+
+const d=readWeek(weekEl.value);
+
+fields.forEach(id=>d[id]=document.getElementById(id).value);
+
+d.days=days.map((x,i)=>document.getElementById('day'+i).value);
+
+d.completed=days.map((x,i)=>document.getElementById('doneDay'+i).checked);
+
+try{localStorage.setItem(key(),JSON.stringify(d));document.getElementById('status').textContent='保存したよ！';renderGrowth();}
+
+catch(e){document.getElementById('status').textContent='保存できなかったよ。';}
+
+}
+
+weekEl.addEventListener('change',loadWeek);
+
+document.getElementById('save').addEventListener('click',saveWeek);
+
+days.forEach((x,i)=>document.getElementById('doneDay'+i).addEventListener('change',saveWeek));
+
+document.getElementById('clear').addEventListener('click',()=>{
+
+if(confirm('この週の記録を消去する？')){localStorage.removeItem(key());loadWeek();document.getElementById('status').textContent='消去したよ。';}
+
+});
+
+document.getElementById('export').addEventListener('click',()=>{
+
+const lines=[`HOOP STRONG ${weekEl.value}週目`,`今週の目標：${document.getElementById('goal').value}`,'週間スケジュール：',...days.map((d,i)=>`${d}：${document.getElementById('day'+i).value} ${document.getElementById('doneDay'+i).checked?'[できた]':''}`),`できたこと：${document.getElementById('good').value}`,`難しかったこと：${document.getElementById('hard').value}`,`来週の目標：${document.getElementById('next').value}`];
+
+const blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`hoop-week-${weekEl.value}.txt`;a.click();URL.revokeObjectURL(a.href);
+
+});
+
+function renderGrowth(){
+
+const chart=document.getElementById('growthChart');chart.innerHTML='';
+
+let total=0,logged=0,active=[];
+
+for(let w=1;w<=12;w++){
+
+const d=readWeek(w),planned=(d.days||[]).filter(x=>String(x||'').trim()).length,completed=(d.completed||[]).filter(Boolean).length;
+
+const pct=planned?Math.min(100,Math.round(completed/planned*100)):0;
+
+if(planned)logged++;total+=completed;active.push(planned>0);
+
+const col=document.createElement('div');col.className='chart-col';col.title=`${w}週目：${pct}%`;
+
+const bar=document.createElement('div');bar.className='chart-bar';
+
+const fill=document.createElement('div');fill.className='chart-fill';fill.style.height=pct+'%';bar.appendChild(fill);
+
+const label=document.createElement('span');label.className='chart-label';label.textContent=w;
+
+col.append(bar,label);chart.appendChild(col);
+
+}
+
+let streak=0;for(let i=active.length-1;i>=0&&active[i];i--)streak++;
+
+document.getElementById('totalDays').textContent=total;
+
+document.getElementById('loggedWeeks').textContent=logged;
+
+document.getElementById('streakWeeks').textContent=streak;
+
+}
+
+const muscleNames={chest:'胸',arms:'腕・肩',core:'お腹・体幹',legs:'脚',glutes:'お尻',back:'背中',agility:'バスケの動き'};
+
+const library={
+
+chest:[['膝つき腕立て伏せ','6〜10回 × 2セット','体を一直線に。余裕があれば通常の腕立て伏せへ。'],['腕立て伏せ','8〜12回 × 2〜3セット','腰を反らさず胸をゆっくり下ろす。']],
+
+arms:[['壁腕立て伏せ','8〜12回 × 2セット','壁を使ってフォームを練習する。'],['ナロー腕立て伏せ','6〜10回 × 2セット','肘を体の近くに。痛みがあれば中止。']],
+
+core:[['バードドッグ','左右8回 × 2セット','腰を傾けずゆっくり伸ばす。'],['プランク','15〜30秒 × 2セット','呼吸を止めず、腰が落ちる前に終える。']],
+
+legs:[['椅子スクワット','8〜12回 × 2セット','安定した椅子を使い、無理のない深さで。'],['スクワット','8〜12回 × 2〜3セット','膝とつま先を同じ方向にする。']],
+
+glutes:[['グルートブリッジ','10〜15回 × 2セット','腰を反らさずお尻を持ち上げる。'],['グルートブリッジ','12〜15回 × 2〜3セット','上で一瞬止め、ゆっくり下ろす。']],
+
+back:[['バードドッグ','左右8回 × 2セット','背中と骨盤を安定させる。'],['うつ伏せY字リフト','8〜10回 × 2セット','小さく持ち上げ、首を反らさない。']],
+
+agility:[['ディフェンス・スライド','10〜15秒 × 2セット','滑らない場所で小さく移動。'],['ディフェンス・スライド','15〜20秒 × 3セット','足を交差させず、姿勢を安定させる。']]
+
+};
+
+function makePlan(){
+
+const level=document.getElementById('level').value,purpose=document.getElementById('purpose').value;
+
+const selected=[...document.querySelectorAll('#muscleChoices input:checked')].map(x=>x.value);
+
+const targets=selected.length?selected:(purpose==='jump'?['legs','glutes']:purpose==='agility'?['legs','agility']:purpose==='endurance'?['core','legs']:purpose==='strength'?['chest','arms','legs']:['chest','core','legs','glutes']);
+
+const idx=level==='beginner'?0:1;
+
+let html=`<h3>おすすめメニュー</h3><p>レベル：${document.getElementById('level').selectedOptions[0].textContent}<br>目的：${document.getElementById('purpose').selectedOptions[0].textContent}</p>`;
+
+targets.forEach(m=>{const e=library[m][idx];html+=`<div class="exercise-result"><b>${muscleNames[m]}：${e[0]}</b><br>${e[1]}<p>${e[2]}</p></div>`;});
+
+html+='<p><b>目安：</b>週2〜3回から始め、筋トレ日の間に休養日を入れよう。部活で疲れている日は休んでOK。</p>';
+
+document.getElementById('planResult').innerHTML=html;
+
+}
+
+document.getElementById('makePlan').addEventListener('click',makePlan);
+
+document.getElementById('saveProfile').addEventListener('click',()=>{
+
+const p={level:document.getElementById('level').value,purpose:document.getElementById('purpose').value,muscles:[...document.querySelectorAll('#muscleChoices input:checked')].map(x=>x.value)};
+
+try{localStorage.setItem('hoop-profile',JSON.stringify(p));document.getElementById('profileStatus').textContent='設定を保存したよ！';}
+
+catch(e){document.getElementById('profileStatus').textContent='保存できなかったよ。';}
+
+});
+
+try{const p=JSON.parse(localStorage.getItem('hoop-profile')||'null');if(p){document.getElementById('level').value=p.level||'beginner';document.getElementById('purpose').value=p.purpose||'general';document.querySelectorAll('#muscleChoices input').forEach(x=>x.checked=(p.muscles||[]).includes(x.value));makePlan();}}catch(e){}
+
+const checks=[...document.querySelectorAll('.done')];
+
+function update(){const n=checks.filter(c=>c.checked).length;document.getElementById('count').textContent=n+' / 3 回完了';document.getElementById('progress').style.width=(n/3*100)+'%';}
+
+checks.forEach((c,i)=>{c.checked=localStorage.getItem('hoop-check-'+i)==='1';c.addEventListener('change',()=>{localStorage.setItem('hoop-check-'+i,c.checked?'1':'0');update();});});
+
+document.getElementById('resetChecks').addEventListener('click',()=>{checks.forEach((c,i)=>{c.checked=false;localStorage.removeItem('hoop-check-'+i);});update();});
+
+loadWeek();update();renderGrowth();
+
+</script>
+
+</body>
+
+</html>

@@ -458,6 +458,419 @@ document.getElementById('resetChecks').addEventListener('click',()=>{checks.forE
 
 loadWeek();update();renderGrowth();
 
+/* HOOP STRONG PLUS - 追加5機能 */
+(() => {
+  "use strict";
+
+  const STORE = "hoopStrongPlusExtras_v1";
+  const readData = () => {
+    try {
+      const d = JSON.parse(localStorage.getItem(STORE) || "{}");
+      return {
+        stats: Array.isArray(d.stats) ? d.stats : [],
+        sessions: Array.isArray(d.sessions) ? d.sessions : [],
+        goals: Array.isArray(d.goals) ? d.goals : [],
+        badges: Array.isArray(d.badges) ? d.badges : [],
+        settings: d.settings || {}
+      };
+    } catch {
+      return { stats: [], sessions: [], goals: [], badges: [], settings: {} };
+    }
+  };
+
+  let data = readData();
+  let timerId = null;
+  let remaining = 0;
+  let running = false;
+
+  const save = () => {
+    localStorage.setItem(STORE, JSON.stringify(data));
+    render();
+  };
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;",
+    '"': "&quot;", "'": "&#39;"
+  }[c]));
+  const today = () => new Date().toISOString().slice(0, 10);
+  const dateLabel = d => esc(d);
+  const num = v => Math.max(0, Number(v) || 0);
+  const pct = (a, b) => b > 0 ? Math.round(a / b * 100) : 0;
+
+  function addStyles() {
+    if (document.getElementById("hsp-extra-css")) return;
+    const style = document.createElement("style");
+    style.id = "hsp-extra-css";
+    style.textContent = `
+      #hsp-extra {max-width:900px;margin:24px auto;padding:16px;
+        font-family:system-ui,-apple-system,sans-serif;color:inherit}
+      #hsp-extra * {box-sizing:border-box}
+      #hsp-extra .hsp-card {padding:16px;margin:14px 0;
+        border:1px solid #8886;border-radius:16px}
+      #hsp-extra h2 {font-size:1.5rem;margin:0 0 8px}
+      #hsp-extra h3 {font-size:1.1rem;margin:0 0 10px}
+      #hsp-extra p {line-height:1.5}
+      #hsp-extra .hsp-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+      #hsp-extra label {display:block;font-size:.92rem;margin:8px 0}
+      #hsp-extra input,#hsp-extra select,#hsp-extra button {
+        font:inherit;padding:10px;border-radius:9px;border:1px solid #8888;
+        max-width:100%;width:100%;margin-top:4px}
+      #hsp-extra button {cursor:pointer;background:#222;color:#fff;border:0;margin-top:8px}
+      #hsp-extra .hsp-secondary {background:#666}
+      #hsp-extra .hsp-row {display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+      #hsp-extra .hsp-row button {flex:1;min-width:100px}
+      #hsp-extra .hsp-bar {height:10px;background:#8883;border-radius:99px;overflow:hidden}
+      #hsp-extra .hsp-fill {height:100%;background:#39865b}
+      #hsp-extra .hsp-muted {opacity:.75;font-size:.9rem}
+      #hsp-extra .hsp-item {padding:10px 0;border-bottom:1px solid #8884}
+      #hsp-extra .hsp-badge {display:inline-block;border:1px solid #8888;
+        padding:6px 9px;border-radius:99px;margin:4px;font-size:.9rem}
+      @media(max-width:520px){#hsp-extra .hsp-grid{grid-template-columns:1fr}}
+    `;
+    document.head.appendChild(style);
+  }
+
+  function mount() {
+    if (document.getElementById("hsp-extra")) return;
+    const root = document.createElement("section");
+    root.id = "hsp-extra";
+    root.innerHTML = `
+      <div class="hsp-card">
+        <h2>🏀 HOOP STRONG PLUS — PRO</h2>
+        <p class="hsp-muted">成長記録・自動メニュー・レポート・タイマー・目標管理</p>
+      </div>
+
+      <div class="hsp-card">
+        <h3>① バスケ能力の成長記録</h3>
+        <p class="hsp-muted">シュートは成功数と試投数を入力。ドリブルは同じコース・距離で測ると比較しやすいよ。</p>
+        <div class="hsp-grid">
+          <label>記録日<input id="hsp-date" type="date"></label>
+          <label>フリースロー成功数<input id="hsp-ft-made" type="number" min="0" value="0"></label>
+          <label>フリースロー試投数<input id="hsp-ft-total" type="number" min="0" value="10"></label>
+          <label>シュート成功数<input id="hsp-shot-made" type="number" min="0" value="0"></label>
+          <label>シュート試投数<input id="hsp-shot-total" type="number" min="0" value="10"></label>
+          <label>ドリブルタイム（秒）<input id="hsp-dribble" type="number" min="0" step="0.1" placeholder="例：12.5"></label>
+        </div>
+        <label>メモ<input id="hsp-stat-note" maxlength="120" placeholder="今日の気づきなど"></label>
+        <button data-action="save-stat">能力記録を保存</button>
+        <div id="hsp-stat-list"></div>
+      </div>
+
+      <div class="hsp-card">
+        <h3>② トレーニング自動調整</h3>
+        <div class="hsp-grid">
+          <label>レベル
+            <select id="hsp-level">
+              <option value="beginner">初心者</option>
+              <option value="intermediate">中級者</option>
+              <option value="advanced">上級者</option>
+            </select>
+          </label>
+          <label>今日の調子
+            <select id="hsp-energy">
+              <option value="good">元気</option>
+              <option value="normal">普通</option>
+              <option value="tired">疲れている</option>
+            </select>
+          </label>
+          <label>目的
+            <select id="hsp-purpose">
+              <option value="shooting">シュート</option>
+              <option value="dribble">ドリブル</option>
+              <option value="strength">筋力・体幹</option>
+              <option value="agility">フットワーク</option>
+              <option value="endurance">持久力</option>
+            </select>
+          </label>
+        </div>
+        <button data-action="make-menu">今日のメニューを提案</button>
+        <div id="hsp-menu-result" aria-live="polite"></div>
+      </div>
+
+      <div class="hsp-card">
+        <h3>③ 週間・月間レポート</h3>
+        <div class="hsp-row">
+          <button data-action="weekly">今週のレポート</button>
+          <button data-action="monthly" class="hsp-secondary">今月のレポート</button>
+        </div>
+        <div id="hsp-report" aria-live="polite"></div>
+      </div>
+
+      <div class="hsp-card">
+        <h3>④ 練習タイマー</h3>
+        <div class="hsp-grid">
+          <label>練習時間（分）<input id="hsp-work-min" type="number" min="1" max="180" value="5"></label>
+          <label>休憩時間（分）<input id="hsp-rest-min" type="number" min="1" max="60" value="1"></label>
+        </div>
+        <p id="hsp-timer-display" style="font-size:2rem;text-align:center" aria-live="polite">05:00</p>
+        <p id="hsp-timer-status" class="hsp-muted">練習の準備ができたらスタート！</p>
+        <div class="hsp-row">
+          <button data-action="start-timer">スタート</button>
+          <button data-action="pause-timer" class="hsp-secondary">一時停止</button>
+          <button data-action="reset-timer" class="hsp-secondary">リセット</button>
+        </div>
+        <button data-action="switch-timer" class="hsp-secondary">練習／休憩を切り替え</button>
+      </div>
+
+      <div class="hsp-card">
+        <h3>⑤ 目標と達成バッジ</h3>
+        <label>目標<input id="hsp-goal-name" maxlength="100" placeholder="例：今週3日練習する"></label>
+        <div class="hsp-grid">
+          <label>目標の種類
+            <select id="hsp-goal-type">
+              <option value="sessions">練習日数（日）</option>
+              <option value="ft">フリースロー成功率（%）</option>
+              <option value="shot">シュート成功率（%）</option>
+            </select>
+          </label>
+          <label>目標値<input id="hsp-goal-target" type="number" min="1" value="3"></label>
+        </div>
+        <button data-action="add-goal">目標を追加</button>
+        <div id="hsp-goal-list"></div>
+        <h3 style="margin-top:16px">獲得バッジ</h3>
+        <div id="hsp-badges"></div>
+      </div>
+      <p class="hsp-muted">記録はこのブラウザに保存されるよ。別端末とは自動共有されないので、定期的なバックアップがおすすめ。</p>
+    `;
+    document.body.appendChild(root);
+    root.querySelector("#hsp-date").value = today();
+    render();
+  }
+
+  function statSummary(type) {
+    const rows = data.stats;
+    const madeKey = type === "ft" ? "ftMade" : "shotMade";
+    const totalKey = type === "ft" ? "ftTotal" : "shotTotal";
+    const made = rows.reduce((s, r) => s + r[madeKey], 0);
+    const total = rows.reduce((s, r) => s + r[totalKey], 0);
+    return { made, total, rate: pct(made, total) };
+  }
+
+  function menuHTML() {
+    const level = document.getElementById("hsp-level").value;
+    const energy = document.getElementById("hsp-energy").value;
+    const purpose = document.getElementById("hsp-purpose").value;
+    const count = level === "beginner" ? 2 : level === "intermediate" ? 3 : 4;
+    const rest = energy === "tired" ? "疲れている日は休憩を長めに。痛みやめまいがある場合は中止して休もう。" :
+      energy === "normal" ? "種目の間に十分休憩し、フォームを優先しよう。" :
+      "調子がよくても、正しいフォームと休憩を大切にしよう。";
+
+    const plans = {
+      shooting: ["近い距離からフォームシュート 10本", "フリースロー 10本", "無理のない位置からシュート練習 10本", "シュートフォームを動画や鏡で確認"],
+      dribble: ["右手・左手の低いドリブル 各30秒", "左右の手を交互に使うドリブル 30秒", "前後・左右のコントロールドリブル", "ゆっくり方向転換の練習"],
+      strength: ["スクワット 8〜12回", "膝つき腕立て伏せ 6〜10回", "プランク 15〜25秒", "ヒップリフト 10回"],
+      agility: ["軽いサイドステップ 20秒", "前後の小さなステップ 20秒", "守備姿勢を保つ練習 15秒", "ゆっくり方向転換の練習"],
+      endurance: ["軽いウォーキングやジョグ 3〜5分", "ドリブルしながら歩く 2分", "軽いフットワーク 20秒", "呼吸を整えながらクールダウン"]
+    };
+    const selected = plans[purpose].slice(0, count);
+    if (energy === "tired") selected.splice(1);
+    return `<p><b>今日の提案（${level === "beginner" ? "初心者" : level === "intermediate" ? "中級者" : "上級者"}）</b></p>
+      <ol>${selected.map(x => `<li>${esc(x)}</li>`).join("")}</ol>
+      <p class="hsp-muted">${esc(rest)}</p>
+      <p class="hsp-muted">これは簡易提案だよ。疲労や痛みがあるときは無理をせず、レベルを上げるよりフォームを優先しよう。</p>`;
+  }
+
+  function periodStats(period) {
+    const now = new Date();
+    const start = new Date(now);
+    if (period === "weekly") {
+      const day = (now.getDay() + 6) % 7;
+      start.setDate(now.getDate() - day);
+    } else {
+      start.setDate(1);
+    }
+    start.setHours(0, 0, 0, 0);
+    const sessions = data.sessions.filter(s => new Date(s.date + "T12:00:00") >= start && new Date(s.date + "T12:00:00") <= now);
+    const stats = data.stats.filter(s => new Date(s.date + "T12:00:00") >= start && new Date(s.date + "T12:00:00") <= now);
+    const days = new Set(sessions.map(s => s.date)).size;
+    const ftMade = stats.reduce((s, r) => s + r.ftMade, 0);
+    const ftTotal = stats.reduce((s, r) => s + r.ftTotal, 0);
+    const shotMade = stats.reduce((s, r) => s + r.shotMade, 0);
+    const shotTotal = stats.reduce((s, r) => s + r.shotTotal, 0);
+    return { days, sessions: sessions.length, ft: pct(ftMade, ftTotal), shot: pct(shotMade, shotTotal) };
+  }
+
+  function goalValue(goal) {
+    if (goal.type === "sessions") return new Set(data.sessions.map(s => s.date)).size;
+    if (goal.type === "ft") return statSummary("ft").rate;
+    return statSummary("shot").rate;
+  }
+
+  function updateBadges() {
+    const earned = [];
+    if (data.sessions.length >= 1) earned.push("初回トレーニング");
+    if (new Set(data.sessions.map(s => s.date)).size >= 5) earned.push("5日練習");
+    if (data.stats.length >= 3) earned.push("成長記録3回");
+    if (data.goals.some(g => goalValue(g) >= g.target)) earned.push("目標達成");
+    data.badges = [...new Set([...data.badges, ...earned])];
+  }
+
+  function render() {
+    const root = document.getElementById("hsp-extra");
+    if (!root) return;
+
+    const list = root.querySelector("#hsp-stat-list");
+    list.innerHTML = data.stats.slice().reverse().slice(0, 8).map(r =>
+      `<div class="hsp-item"><b>${dateLabel(r.date)}</b>
+       <div>フリースロー ${r.ftMade}/${r.ftTotal}本（${pct(r.ftMade,r.ftTotal)}%）</div>
+       <div>シュート ${r.shotMade}/${r.shotTotal}本（${pct(r.shotMade,r.shotTotal)}%）</div>
+       <div>ドリブルタイム：${r.dribble ? esc(r.dribble) + "秒" : "未記録"}</div>
+       ${r.note ? `<div class="hsp-muted">${esc(r.note)}</div>` : ""}</div>`
+    ).join("") || '<p class="hsp-muted">まだ記録がないよ。上で入力して保存しよう。</p>';
+
+    const ft = statSummary("ft"), shot = statSummary("shot");
+    const week = periodStats("weekly");
+    root.querySelector("#hsp-report").innerHTML = `
+      <div class="hsp-item"><b>今週</b><p>練習日数：${week.days}日 / 記録数：${week.sessions}回</p>
+      <p>フリースロー成功率：${week.ft}% ／ シュート成功率：${week.shot}%</p></div>
+      <div class="hsp-item"><b>全期間の能力記録</b><p>フリースロー成功率：${ft.rate}%（${ft.made}/${ft.total}本）</p>
+      <p>シュート成功率：${shot.rate}%（${shot.made}/${shot.total}本）</p>
+      <p>能力記録：${data.stats.length}回</p></div>`;
+
+    root.querySelector("#hsp-goal-list").innerHTML = data.goals.map((g, i) => {
+      const value = goalValue(g);
+      const progress = Math.min(100, pct(value, g.target));
+      const unit = g.type === "sessions" ? "日" : "%";
+      return `<div class="hsp-item"><b>${esc(g.name)}</b>
+        <p>${value}${unit} / ${g.target}${unit}</p>
+        <div class="hsp-bar"><div class="hsp-fill" style="width:${progress}%"></div></div>
+        <p class="hsp-muted">${value >= g.target ? "達成！" : "あと " + Math.max(0, g.target - value) + unit}</p>
+        <button class="hsp-secondary" data-action="delete-goal" data-index="${i}">この目標を削除</button></div>`;
+    }).join("") || '<p class="hsp-muted">目標を追加すると、ここに進み具合が表示されるよ。</p>';
+
+    root.querySelector("#hsp-badges").innerHTML = data.badges.map(b =>
+      `<span class="hsp-badge">🏅 ${esc(b)}</span>`
+    ).join("") || '<p class="hsp-muted">練習や記録を続けるとバッジが増えるよ。</p>';
+  }
+
+  function timerDisplay() {
+    const el = document.getElementById("hsp-timer-display");
+    if (!el) return;
+    const m = Math.floor(remaining / 60).toString().padStart(2, "0");
+    const s = (remaining % 60).toString().padStart(2, "0");
+    el.textContent = `${m}:${s}`;
+  }
+
+  function stopTimer() {
+    if (timerId !== null) clearInterval(timerId);
+    timerId = null;
+    running = false;
+  }
+
+  function startTimer() {
+    if (running) return;
+    if (remaining <= 0) remaining = num(document.getElementById("hsp-work-min").value) * 60;
+    if (remaining <= 0) remaining = 60;
+    running = true;
+    document.getElementById("hsp-timer-status").textContent = "タイマー作動中";
+    timerId = setInterval(() => {
+      if (!running) return;
+      remaining = Math.max(0, remaining - 1);
+      timerDisplay();
+      if (remaining === 0) {
+        stopTimer();
+        document.getElementById("hsp-timer-status").textContent = "時間になったよ！必要なら休憩を取ろう。";
+        try { if ("vibrate" in navigator) navigator.vibrate(150); } catch {}
+      }
+    }, 1000);
+  }
+
+  function handleAction(action, button) {
+    if (action === "save-stat") {
+      const ftMade = num(document.getElementById("hsp-ft-made").value);
+      const ftTotal = num(document.getElementById("hsp-ft-total").value);
+      const shotMade = num(document.getElementById("hsp-shot-made").value);
+      const shotTotal = num(document.getElementById("hsp-shot-total").value);
+      if (ftMade > ftTotal || shotMade > shotTotal) {
+        alert("成功数は試投数以下にしてね。");
+        return;
+      }
+      data.stats.push({
+        date: document.getElementById("hsp-date").value || today(),
+        ftMade, ftTotal, shotMade, shotTotal,
+        dribble: num(document.getElementById("hsp-dribble").value),
+        note: document.getElementById("hsp-stat-note").value.trim()
+      });
+      data.sessions.push({ date: today(), kind: "skill" });
+      updateBadges();
+      save();
+      alert("能力記録を保存したよ！");
+    } else if (action === "make-menu") {
+      document.getElementById("hsp-menu-result").innerHTML = menuHTML();
+    } else if (action === "weekly" || action === "monthly") {
+      const r = periodStats(action);
+      document.getElementById("hsp-report").innerHTML = `
+        <div class="hsp-item"><b>${action === "weekly" ? "今週" : "今月"}のレポート</b>
+        <p>練習した日：${r.days}日</p><p>練習記録：${r.sessions}回</p>
+        <p>フリースロー成功率：${r.ft}%</p><p>シュート成功率：${r.shot}%</p></div>`;
+    } else if (action === "start-timer") {
+      startTimer();
+    } else if (action === "pause-timer") {
+      stopTimer();
+      document.getElementById("hsp-timer-status").textContent = "一時停止中";
+    } else if (action === "reset-timer") {
+      stopTimer();
+      remaining = num(document.getElementById("hsp-work-min").value) * 60;
+      timerDisplay();
+      document.getElementById("hsp-timer-status").textContent = "リセットしたよ";
+    } else if (action === "switch-timer") {
+      stopTimer();
+      const work = num(document.getElementById("hsp-work-min").value) * 60;
+      const rest = num(document.getElementById("hsp-rest-min").value) * 60;
+      remaining = remaining === rest ? work : rest;
+      timerDisplay();
+      document.getElementById("hsp-timer-status").textContent =
+        remaining === rest ? "休憩タイマー" : "練習タイマー";
+    } else if (action === "add-goal") {
+      const name = document.getElementById("hsp-goal-name").value.trim();
+      const target = num(document.getElementById("hsp-goal-target").value);
+      if (!name || target < 1) {
+        alert("目標名と1以上の目標値を入力してね。");
+        return;
+      }
+      data.goals.push({
+        name,
+        target,
+        type: document.getElementById("hsp-goal-type").value
+      });
+      updateBadges();
+      save();
+      document.getElementById("hsp-goal-name").value = "";
+    } else if (action === "delete-goal") {
+      const index = Number(button.dataset.index);
+      if (Number.isInteger(index) && index >= 0 && index < data.goals.length) {
+        data.goals.splice(index, 1);
+        save();
+      }
+    }
+  }
+
+  function init() {
+    addStyles();
+    mount();
+    const root = document.getElementById("hsp-extra");
+    root.addEventListener("click", e => {
+      const button = e.target.closest("button[data-action]");
+      if (button) handleAction(button.dataset.action, button);
+    });
+    document.getElementById("hsp-work-min").addEventListener("change", () => {
+      if (!running) {
+        remaining = num(document.getElementById("hsp-work-min").value) * 60;
+        timerDisplay();
+      }
+    });
+    remaining = num(document.getElementById("hsp-work-min").value) * 60;
+    timerDisplay();
+    updateBadges();
+    save();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+  } else {
+    init();
+  }
+})();
+
 </script>
 
 </body>

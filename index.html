@@ -1392,9 +1392,9 @@ loadWeek();update();renderGrowth();
 
     // タブの切り替え
     function switchTab(tab) {
-      document.querySelectorAll("[data-hoop-tab-content]").forEach(el => {
-        const visible = el.dataset.hoopTabContent === tab;
-        el.dataset.hoopTabContent = visible ? tab : "hidden";
+document.querySelectorAll("[data-hoop-tab-group]").forEach(el => {
+const visible = el.dataset.hoopTabGroup === tab;
+el.style.display = visible ? "" : "none";
       });
 
       nav.querySelectorAll("button[data-tab]").forEach(button => {

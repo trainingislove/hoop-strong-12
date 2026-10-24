@@ -1243,6 +1243,181 @@ loadWeek();update();renderGrowth();
   }
 })();
 
+/* HOOP STRONG - タブ式レイアウト */
+(() => {
+  "use strict";
+
+  function initHoopTabs() {
+    if (document.getElementById("hoop-tabs")) return;
+
+    const style = document.createElement("style");
+    style.id = "hoop-tabs-style";
+    style.textContent = `
+      #hoop-tabs {
+        display:grid;
+        grid-template-columns:repeat(3,minmax(0,1fr));
+        gap:7px;
+        margin:16px auto;
+        position:sticky;
+        top:0;
+        z-index:1000;
+        padding:10px 0;
+        background:#0b1220;
+      }
+      #hoop-tabs button {
+        margin:0;
+        padding:10px 4px;
+        border:1px solid #40506a;
+        border-radius:10px;
+        background:#121d30;
+        color:#f4f7fb;
+        font-size:13px;
+        font-weight:700;
+        cursor:pointer;
+      }
+      #hoop-tabs button[aria-selected="true"] {
+        background:#b8f34b;
+        color:#101827;
+        border-color:#b8f34b;
+      }
+      [data-hoop-tab-content="hidden"] {
+        display:none !important;
+      }
+      @media(min-width:600px) {
+        #hoop-tabs {
+          grid-template-columns:repeat(5,minmax(0,1fr));
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    const header = document.querySelector(".wrap > header");
+    const nav = document.createElement("nav");
+    nav.id = "hoop-tabs";
+    nav.setAttribute("aria-label", "メインメニュー");
+
+    const tabs = [
+      ["home", "🏠 ホーム"],
+      ["training", "🏀 練習"],
+      ["records", "📈 記録"],
+      ["calendar", "📅 カレンダー"],
+      ["other", "⚙️ その他"]
+    ];
+
+    tabs.forEach(([id, label], index) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.dataset.tab = id;
+      button.textContent = label;
+      button.setAttribute("aria-selected", index === 0 ? "true" : "false");
+      button.addEventListener("click", () => switchTab(id));
+      nav.appendChild(button);
+    });
+
+    header.insertAdjacentElement("afterend", nav);
+
+    const assign = (element, tab) => {
+      element.dataset.hoopTabContent = tab;
+    };
+
+    // 最初からあるページの各セクション
+    document.querySelectorAll("main > section").forEach(section => {
+      const heading = section.querySelector("h2");
+      const text = heading ? heading.textContent : "";
+
+      if (text.includes("トレーニング A") ||
+          text.includes("トレーニング B") ||
+          text.includes("あなた専用")) {
+        assign(section, "training");
+      } else if (text.includes("12週間")) {
+        assign(section, "home");
+      } else if (text.includes("成長グラフ") ||
+                 text.includes("スケジュールと感想") ||
+                 text.includes("トレーニング記録")) {
+        assign(section, "records");
+      } else if (text.includes("忘れずに")) {
+        assign(section, "other");
+      }
+    });
+
+    // トップの紹介文
+    const hero = document.querySelector("main > .hero");
+    if (hero) assign(hero, "home");
+
+    // 追加機能：カード単位で分類する
+    const extraGroups = [
+      {
+        root: document.getElementById("hsp-extra"),
+        rules: [
+          ["① バスケ能力", "records"],
+          ["② トレーニング自動調整", "training"],
+          ["③ 週間・月間レポート", "records"],
+          ["④ 練習タイマー", "other"],
+          ["⑤ 目標と達成バッジ", "records"]
+        ]
+      },
+      {
+        root: document.getElementById("hsp-v2-tools"),
+        rules: [
+          ["② ホーム画面", "home"],
+          ["① バスケ能力", "records"],
+          ["③ ポジション別", "training"],
+          ["④ 練習カレンダー", "calendar"],
+          ["⑤ バックアップ", "other"]
+        ]
+      }
+    ];
+
+    extraGroups.forEach(({ root, rules }) => {
+      if (!root) return;
+
+      root.querySelectorAll(":scope > .hsp-card, :scope > .v2-card")
+        .forEach(card => {
+          const heading = card.querySelector("h2, h3");
+          const title = heading ? heading.textContent : "";
+
+          const matched = rules.find(([keyword]) =>
+            title.includes(keyword)
+          );
+
+          assign(card, matched ? matched[1] : "other");
+        });
+
+      // 追加機能のタイトルや説明文はホームにまとめる
+      const intro = root.querySelector(":scope > .hsp-card, :scope > .v2-card");
+      if (intro && !intro.dataset.hoopTabContent) {
+        assign(intro, "home");
+      }
+    });
+
+    // タブの切り替え
+    function switchTab(tab) {
+      document.querySelectorAll("[data-hoop-tab-content]").forEach(el => {
+        const visible = el.dataset.hoopTabContent === tab;
+        el.dataset.hoopTabContent = visible ? tab : "hidden";
+      });
+
+      nav.querySelectorAll("button[data-tab]").forEach(button => {
+        button.setAttribute(
+          "aria-selected",
+          button.dataset.tab === tab ? "true" : "false"
+        );
+      });
+    }
+
+    // 最初はホームを表示
+    switchTab("home");
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initHoopTabs, {
+      once: true
+    });
+  } else {
+    initHoopTabs();
+  }
+})();
+
 </script>
 
 </body>

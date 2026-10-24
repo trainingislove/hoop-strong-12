@@ -871,6 +871,378 @@ loadWeek();update();renderGrowth();
   }
 })();
 
+/* HOOP STRONG PLUS 2.0 - 5つの追加機能 */
+(() => {
+  "use strict";
+
+  const STORE = "hoopStrongPlusExtras_v1";
+  const ID = "hsp-v2-tools";
+
+  const getData = () => {
+    try {
+      const d = JSON.parse(localStorage.getItem(STORE) || "{}");
+      return {
+        stats: Array.isArray(d.stats) ? d.stats : [],
+        sessions: Array.isArray(d.sessions) ? d.sessions : [],
+        goals: Array.isArray(d.goals) ? d.goals : [],
+        badges: Array.isArray(d.badges) ? d.badges : []
+      };
+    } catch {
+      return { stats: [], sessions: [], goals: [], badges: [] };
+    }
+  };
+
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  }[c]));
+
+  const dateKey = d => [
+    d.getFullYear(),
+    String(d.getMonth() + 1).padStart(2, "0"),
+    String(d.getDate()).padStart(2, "0")
+  ].join("-");
+
+  const rate = (made, total) => total > 0
+    ? Math.round(made / total * 100) : null;
+
+  let month = new Date();
+
+  function mount() {
+    if (document.getElementById(ID)) return;
+
+    const style = document.createElement("style");
+    style.id = ID + "-css";
+    style.textContent = `
+      #${ID}{max-width:900px;margin:20px auto;padding:14px;
+        font-family:system-ui,-apple-system,sans-serif}
+      #${ID} *{box-sizing:border-box}
+      #${ID} .v2-card{border:1px solid #8886;border-radius:15px;
+        padding:15px;margin:14px 0}
+      #${ID} .v2-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+      #${ID} .v2-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+      #${ID} .v2-metric{padding:12px;border-radius:12px;background:#8882}
+      #${ID} .v2-number{font-size:1.5rem;font-weight:700}
+      #${ID} button,#${ID} select,#${ID} input{font:inherit;padding:10px;
+        border:1px solid #8888;border-radius:9px;max-width:100%;width:100%;margin-top:5px}
+      #${ID} button{background:#222;color:#fff;cursor:pointer}
+      #${ID} .v2-muted{opacity:.75;font-size:.9rem}
+      #${ID} .v2-row{display:flex;align-items:center;gap:8px}
+      #${ID} .v2-row>*{flex:1;min-width:0}
+      #${ID} .v2-cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;text-align:center}
+      #${ID} .v2-day{padding:8px 0;border-radius:8px;background:#8881;font-size:.9rem}
+      #${ID} .v2-done{background:#39865b;color:white}
+      #${ID} .v2-chart{width:100%;height:auto;display:block}
+      #${ID} .v2-item{padding:10px 0;border-bottom:1px solid #8884}
+      @media(max-width:480px){
+        #${ID} .v2-grid,#${ID} .v2-metrics{grid-template-columns:1fr}
+      }
+    `;
+    document.head.appendChild(style);
+
+    const root = document.createElement("section");
+    root.id = ID;
+    root.innerHTML = `
+      <div class="v2-card">
+        <h2>🏀 HOOP STRONG PLUS 2.0</h2>
+        <p class="v2-muted">成長を確認して、次の練習につなげよう！</p>
+      </div>
+
+      <div class="v2-card">
+        <h3>② ホーム画面ダッシュボード</h3>
+        <div id="v2-dashboard" class="v2-metrics"></div>
+        <p id="v2-latest" class="v2-muted"></p>
+      </div>
+
+      <div class="v2-card">
+        <h3>① バスケ能力の成長グラフ</h3>
+        <label>表示する記録
+          <select id="v2-chart-type">
+            <option value="shot">シュート成功率</option>
+            <option value="ft">フリースロー成功率</option>
+            <option value="dribble">ドリブルタイム（秒）</option>
+          </select>
+        </label>
+        <div id="v2-chart"></div>
+        <p class="v2-muted">記録が2回以上あると、変化を比べやすくなるよ。</p>
+      </div>
+
+      <div class="v2-card">
+        <h3>③ ポジション別メニュー</h3>
+        <label>ポジション
+          <select id="v2-position">
+            <option value="guard">ガード（PG・SG）</option>
+            <option value="forward">フォワード（SF・PF）</option>
+            <option value="center">センター（C）</option>
+          </select>
+        </label>
+        <label>今日の調子
+          <select id="v2-condition">
+            <option value="normal">普通</option>
+            <option value="tired">疲れている</option>
+          </select>
+        </label>
+        <button data-v2="menu">ポジション別メニューを表示</button>
+        <div id="v2-position-menu" aria-live="polite"></div>
+      </div>
+
+      <div class="v2-card">
+        <h3>④ 練習カレンダー</h3>
+        <div class="v2-row">
+          <button data-v2="prev-month" aria-label="前の月">◀</button>
+          <strong id="v2-month" style="text-align:center"></strong>
+          <button data-v2="next-month" aria-label="次の月">▶</button>
+        </div>
+        <div id="v2-calendar" class="v2-cal" style="margin-top:12px"></div>
+        <p class="v2-muted">緑色の日は、この追加機能で記録した日だよ。</p>
+      </div>
+
+      <div class="v2-card">
+        <h3>⑤ バックアップ・復元</h3>
+        <p>バックアップには、このサイトのブラウザ内データをまとめて保存するよ。ファイルは安全な場所に保管してね。</p>
+        <button data-v2="backup">全ブラウザデータをバックアップ</button>
+        <label>バックアップファイルを選択
+          <input id="v2-file" type="file" accept=".json,application/json">
+        </label>
+        <button data-v2="restore">バックアップから復元</button>
+        <p class="v2-muted">復元では、追加機能の記録は確認後に置き換え、それ以外の保存キーは存在しない場合だけ追加するよ。</p>
+        <p id="v2-backup-status" aria-live="polite"></p>
+      </div>
+    `;
+    document.body.appendChild(root);
+
+    root.addEventListener("click", e => {
+      const b = e.target.closest("button[data-v2]");
+      if (!b) return;
+      switch (b.dataset.v2) {
+        case "menu": showPositionMenu(); break;
+        case "prev-month":
+          month = new Date(month.getFullYear(), month.getMonth() - 1, 1);
+          renderCalendar(); break;
+        case "next-month":
+          month = new Date(month.getFullYear(), month.getMonth() + 1, 1);
+          renderCalendar(); break;
+        case "backup": backup(); break;
+        case "restore": restore(); break;
+      }
+    });
+
+    root.querySelector("#v2-chart-type").addEventListener("change", renderChart);
+    renderAll();
+  }
+
+  function renderDashboard() {
+    const d = getData();
+    const days = new Set(d.sessions.map(s => s.date)).size;
+    const latest = d.stats.slice().sort((a,b) => b.date.localeCompare(a.date))[0];
+    const goalsDone = d.goals.filter(g => {
+      let current = 0;
+      if (g.type === "sessions") current = days;
+      if (g.type === "ft") {
+        const made = d.stats.reduce((s,r)=>s+(Number(r.ftMade)||0),0);
+        const total = d.stats.reduce((s,r)=>s+(Number(r.ftTotal)||0),0);
+        current = rate(made,total) || 0;
+      }
+      if (g.type === "shot") {
+        const made = d.stats.reduce((s,r)=>s+(Number(r.shotMade)||0),0);
+        const total = d.stats.reduce((s,r)=>s+(Number(r.shotTotal)||0),0);
+        current = rate(made,total) || 0;
+      }
+      return current >= Number(g.target);
+    }).length;
+
+    document.getElementById("v2-dashboard").innerHTML = `
+      <div class="v2-metric"><div>練習記録</div><div class="v2-number">${d.sessions.length}回</div></div>
+      <div class="v2-metric"><div>練習した日</div><div class="v2-number">${days}日</div></div>
+      <div class="v2-metric"><div>設定した目標</div><div class="v2-number">${d.goals.length}個</div></div>
+      <div class="v2-metric"><div>達成した目標</div><div class="v2-number">${goalsDone}個</div></div>
+    `;
+    document.getElementById("v2-latest").textContent = latest
+      ? `最新の能力記録：${latest.date} ／ シュート成功率 ${rate(Number(latest.shotMade)||0,Number(latest.shotTotal)||0) ?? "—"}%`
+      : "能力記録はまだありません。まずはシュート記録を保存してみよう。";
+  }
+
+  function renderChart() {
+    const d = getData();
+    const type = document.getElementById("v2-chart-type").value;
+    const rows = d.stats.slice().sort((a,b)=>a.date.localeCompare(b.date))
+      .filter(r => type === "dribble"
+        ? Number(r.dribble) > 0
+        : Number(r[type + "Total"]) > 0)
+      .slice(-12);
+
+    const target = document.getElementById("v2-chart");
+    if (!rows.length) {
+      target.innerHTML = "<p class='v2-muted'>この種類の記録はまだないよ。</p>";
+      return;
+    }
+
+    const values = rows.map(r => type === "dribble"
+      ? Number(r.dribble)
+      : rate(Number(r[type + "Made"])||0, Number(r[type + "Total"])||0));
+    const max = Math.max(...values, 1);
+    const min = type === "dribble" ? Math.min(...values, 0) : 0;
+    const range = Math.max(max - min, 1);
+    const w = 320, h = 170, left = 32, right = 8, top = 12, bottom = 32;
+    const points = values.map((v,i) => {
+      const x = left + (rows.length === 1 ? (w-left-right)/2 : i*(w-left-right)/(rows.length-1));
+      const y = top + (max-v)/range*(h-top-bottom);
+      return `${x},${y}`;
+    }).join(" ");
+    const dots = values.map((v,i) => {
+      const x = left + (rows.length === 1 ? (w-left-right)/2 : i*(w-left-right)/(rows.length-1));
+      const y = top + (max-v)/range*(h-top-bottom);
+      return `<circle cx="${x}" cy="${y}" r="3.5" fill="currentColor"><title>${esc(rows[i].date)}：${v}${type==="dribble"?"秒":"%"}</title></circle>`;
+    }).join("");
+    target.innerHTML = `
+      <svg class="v2-chart" viewBox="0 0 ${w} ${h}" role="img" aria-label="記録の推移グラフ">
+        <line x1="${left}" y1="${h-bottom}" x2="${w-right}" y2="${h-bottom}" stroke="currentColor" opacity=".4"/>
+        <polyline points="${points}" fill="none" stroke="#39865b" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+        ${dots}
+        <text x="${left}" y="${h-8}" font-size="10" fill="currentColor">${esc(rows[0].date.slice(5))}</text>
+        <text x="${w-right}" y="${h-8}" font-size="10" text-anchor="end" fill="currentColor">${esc(rows[rows.length-1].date.slice(5))}</text>
+        <text x="${left}" y="10" font-size="10" fill="currentColor">${type==="dribble"?"秒":"%"}</text>
+      </svg>
+      <div class="v2-item">${rows.map((r,i)=>
+        `<div>${esc(r.date)}：${values[i]}${type==="dribble"?"秒":"%"}</div>`
+      ).join("")}</div>`;
+  }
+
+  function showPositionMenu() {
+    const pos = document.getElementById("v2-position").value;
+    const tired = document.getElementById("v2-condition").value === "tired";
+    const menus = {
+      guard: [
+        "左右の手でコントロールドリブル 各30秒",
+        "方向転換を入れたドリブル 3セット",
+        "近い距離からフォームシュート 10本",
+        "パスを受けてからの判断練習"
+      ],
+      forward: [
+        "左右のレイアップをフォーム重視で練習",
+        "近・中距離のシュート練習",
+        "守備姿勢とサイドステップ",
+        "リバウンドの位置取りを確認"
+      ],
+      center: [
+        "ゴール近くの左右のシュートフォーム練習",
+        "リバウンドの位置取りとジャンプの着地練習",
+        "守備姿勢とゴール下のフットワーク",
+        "近い距離からのパス・キャッチ練習"
+      ]
+    };
+    const names = {guard:"ガード",forward:"フォワード",center:"センター"};
+    const items = tired ? menus[pos].slice(0,2) : menus[pos];
+    document.getElementById("v2-position-menu").innerHTML =
+      `<p><b>${names[pos]}向けメニュー</b></p><ol>${items.map(x=>`<li>${esc(x)}</li>`).join("")}</ol>
+       <p class="v2-muted">${tired?"疲れている日は軽めに。":"フォームを優先し、種目の間は十分に休もう。"} 痛みがある場合は中止してね。</p>`;
+  }
+
+  function renderCalendar() {
+    const d = getData();
+    const active = new Set([
+      ...d.sessions.map(s=>s.date),
+      ...d.stats.map(s=>s.date)
+    ]);
+    const y = month.getFullYear(), m = month.getMonth();
+    document.getElementById("v2-month").textContent = `${y}年${m+1}月`;
+    const first = new Date(y,m,1).getDay();
+    const count = new Date(y,m+1,0).getDate();
+    const labels = ["日","月","火","水","木","金","土"];
+    let html = labels.map(x=>`<div class="v2-muted">${x}</div>`).join("");
+    for (let i=0;i<first;i++) html += "<div></div>";
+    for (let day=1;day<=count;day++) {
+      const key = dateKey(new Date(y,m,day));
+      html += `<div class="v2-day ${active.has(key)?"v2-done":""}" title="${active.has(key)?"記録あり":"記録なし"}">${day}</div>`;
+    }
+    document.getElementById("v2-calendar").innerHTML = html;
+  }
+
+  function backup() {
+    try {
+      const all = {};
+      for (let i=0;i<localStorage.length;i++) {
+        const key = localStorage.key(i);
+        if (key !== null) all[key] = localStorage.getItem(key);
+      }
+      const blob = new Blob([JSON.stringify({
+        format:"HOOP_STRONG_PLUS_BACKUP",
+        version:2,
+        createdAt:new Date().toISOString(),
+        localStorage:all
+      },null,2)], {type:"application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `hoop-strong-backup-${dateKey(new Date())}.json`;
+      a.click();
+      setTimeout(()=>URL.revokeObjectURL(url),1500);
+      document.getElementById("v2-backup-status").textContent =
+        "バックアップを作成したよ。ファイルが保存されたか確認してね。";
+    } catch {
+      document.getElementById("v2-backup-status").textContent =
+        "バックアップに失敗したよ。ブラウザの保存容量を確認してね。";
+    }
+  }
+
+  function restore() {
+    const file = document.getElementById("v2-file").files[0];
+    const status = document.getElementById("v2-backup-status");
+    if (!file) {
+      status.textContent = "先にバックアップのJSONファイルを選んでね。";
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const backup = JSON.parse(reader.result);
+        if (backup.format !== "HOOP_STRONG_PLUS_BACKUP" ||
+            !backup.localStorage || typeof backup.localStorage !== "object") {
+          throw new Error("invalid backup");
+        }
+        const extras = backup.localStorage[STORE];
+        if (typeof extras !== "string") {
+          throw new Error("missing extras");
+        }
+        const parsedExtras = JSON.parse(extras);
+        if (!parsedExtras || typeof parsedExtras !== "object") {
+          throw new Error("invalid extras data");
+        }
+        if (!confirm("追加機能の現在の記録を、バックアップ内の記録に置き換えるよ。元に戻せるように、先に最新のバックアップを保存した？")) return;
+
+        // 既存サイトのキーは上書きせず、欠けているキーだけ復元する
+        let added = 0;
+        for (const [key,value] of Object.entries(backup.localStorage)) {
+          if (typeof value !== "string") continue;
+          if (key === STORE) continue;
+          if (localStorage.getItem(key) === null) {
+            localStorage.setItem(key,value);
+            added++;
+          }
+        }
+        localStorage.setItem(STORE, extras);
+        status.textContent = `復元できたよ。追加機能の記録を戻し、未存在の保存キーを${added}件追加したよ。`;
+        renderAll();
+      } catch {
+        status.textContent = "復元できなかったよ。HOOP STRONG PLUSで作成したJSONファイルか確認してね。";
+      }
+    };
+    reader.onerror = () => status.textContent = "ファイルを読み込めなかったよ。";
+    reader.readAsText(file);
+  }
+
+  function renderAll() {
+    renderDashboard();
+    renderChart();
+    renderCalendar();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", mount, {once:true});
+  } else {
+    mount();
+  }
+})();
+
 </script>
 
 </body>

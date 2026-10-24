@@ -1434,6 +1434,113 @@ loadWeek();update();renderGrowth();
   }
 })();
 
+/* HOOP STRONG PLUS - ホーム画面デザイン改善 */
+(() => {
+  "use strict";
+
+  if (document.getElementById("hsp-home-design")) return;
+
+  const style = document.createElement("style");
+  style.id = "hsp-home-design";
+
+  style.textContent = `
+    :root {
+      --hsp-green: #b8f34b;
+      --hsp-bg: #080d16;
+      --hsp-card: #121d30;
+      --hsp-border: #29364b;
+      --hsp-text: #f4f7fb;
+      --hsp-muted: #a7b2c4;
+    }
+
+    body {
+      background: var(--hsp-bg) !important;
+      color: var(--hsp-text);
+    }
+
+    .wrap {
+      width: min(100% - 24px, 760px) !important;
+      margin-inline: auto !important;
+      padding-bottom: 32px;
+    }
+
+    .wrap > header {
+      padding: 20px 4px 12px;
+    }
+
+    .wrap > header h1 {
+      color: var(--hsp-green) !important;
+      letter-spacing: .04em;
+      font-weight: 900;
+    }
+
+    #hoop-tabs {
+      border: 1px solid var(--hsp-border);
+      box-shadow: 0 8px 24px #0005;
+      backdrop-filter: blur(12px);
+    }
+
+    /* ホームに表示するカード */
+    [data-hoop-tab-group="home"] {
+      border-radius: 18px;
+    }
+
+    main [data-hoop-tab-group="home"],
+    #hsp-extra .hsp-card[data-hoop-tab-group="home"],
+    #hsp-v2-tools .v2-card[data-hoop-tab-group="home"] {
+      background: var(--hsp-card);
+      border: 1px solid var(--hsp-border);
+      box-shadow: 0 8px 24px #0002;
+      margin-bottom: 14px;
+      padding: 18px;
+    }
+
+    [data-hoop-tab-group="home"] h2,
+    [data-hoop-tab-group="home"] h3 {
+      color: var(--hsp-text);
+      line-height: 1.45;
+    }
+
+    [data-hoop-tab-group="home"] p {
+      line-height: 1.8;
+    }
+
+    button {
+      border-radius: 12px;
+      transition: filter .15s ease;
+    }
+
+    button:active {
+      filter: brightness(.88);
+    }
+
+    input, select, textarea {
+      max-width: 100%;
+      border-radius: 10px;
+    }
+
+    /* スマホで横にはみ出さない */
+    img, canvas, svg {
+      max-width: 100%;
+    }
+
+    @media (max-width: 480px) {
+      .wrap {
+        width: min(100% - 18px, 760px) !important;
+      }
+
+      main [data-hoop-tab-group="home"],
+      #hsp-extra .hsp-card[data-hoop-tab-group="home"],
+      #hsp-v2-tools .v2-card[data-hoop-tab-group="home"] {
+        padding: 14px;
+        margin-bottom: 11px;
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
+})();
+
 </script>
 
 </body>
